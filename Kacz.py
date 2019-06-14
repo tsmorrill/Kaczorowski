@@ -79,7 +79,7 @@ def alpha_a_b(coord, N, silent=True):
     return alpha, a, b
 
 def old_box_q(coord, N, root):
-    ```Calculate alpha, a, b according to Kaczorowski.```
+    """Calculate alpha, a, b according to Kaczorowski."""
     [alpha, a, b] = alpha_a_b(coord, N)
     if alpha - 3*b < 0:
         return None
