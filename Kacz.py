@@ -40,7 +40,9 @@ def root(point, silent=False):
     finally:
         return root
 
-def box(coord, N, silent=True):
+def alpha_a_b(coord, N, silent=True):
+    """Calculate alpha, a, b for a rectangle with coordinates coord and
+    truncation at N."""
     [x0, x1, y0, y1] = coord
 
     a = 0
@@ -76,11 +78,11 @@ def box(coord, N, silent=True):
 
 def good_box(coord, N):
     [x0, x1, y0, y1] = coord
-    [alpha, a, b] = box(coord, N)
+    [alpha, a, b] = alpha_a_b(coord, N)
     return (x1 - x0 < 1) and (alpha > 3*b)
 
 def old_box_q(coord, N, root):
-    [alpha, a, b] = box(coord, N)
+    [alpha, a, b] = alpha_a_b(coord, N)
     if alpha - 3*b < 0:
         return None
     return int(4*pi*a/(alpha - 3*b)) + 1
@@ -100,7 +102,7 @@ def box_q(coord, N, root, silent=True, compare=False):
         string = string[:-1] + '.'
         print(string)
         return None
-    [alpha, a, b] = box(coord, N)
+    [alpha, a, b] = alpha_a_b(coord, N)
     w = root.imag
     aw = 0
     for zero in zeros[:N]:
