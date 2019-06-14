@@ -12,25 +12,22 @@ zeros = [float(string) for string in zeros[:4000]]
 file.close()
 print('Approximating by using first {} zeros of zeta.'.format(len(zeros)))
 
-def k(z):
-    sum = 0
-    for zero in zeros:
-        sum += exp(complex(0.5, zero)*z)
-    return sum
-
-def K(z):
-    sum = 0
-    for zero in zeros:
-        sum += exp(complex(0.5, zero)*z)/complex(0.5, zero)
-    return sum
-
 def F(z):
-    return exp(-z/2)*K(z)
+    sum = 0
+    for zero in zeros:
+        sum += exp(complex(0, zero)*z)/complex(0.5, zero)
+    return sum
+
+def f(z):
+    sum = 0
+    for zero in zeros:
+        sum += complex(0, zero)*exp(complex(0, zero)*z)/complex(0.5, zero)
+    return sum
 
 def root(point, silent=False):
     root = None
     try:
-        root = newton(K, point, fprime=k)
+        root = newton(F, point, fprime=f)
     except:
         if not silent:
             print("Newton's method failed.")
@@ -199,7 +196,3 @@ def min_N(coord, N, root, silent=False):
                 X = q**(-n)
                 best_N = n
     return best_N
-
-def newt(root):
-    fun, fun_d = K(root), k(root)
-    return bool(abs(fun) < abs(fun_d*root.imag))
