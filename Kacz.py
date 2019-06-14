@@ -72,7 +72,8 @@ def alpha_a_b(coord, N, silent=True):
     min_west = minimize(F_west, 0.5*(y0 + y1), bounds=y_bounds).fun
 
     if not silent:
-        print(min_north, min_south, min_east, min_west)
+        tuple = (min_north, min_south, min_east, min_west)
+        print("alpha = min{}.".format(tuple))
 
     alpha = min(min_north, min_south, min_east, min_west)
 
@@ -86,8 +87,8 @@ def old_box_q(coord, N, root):
     return int(4*pi*a/(alpha - 3*b)) + 1
 
 def box_q(coord, N, root, silent=True, compare=False):
-    """Calculate alpha, a, b according to Morrill, Platt and Trudgian, with the
-    option of comparing to Kaczorowski.
+    """Calculate q according to Morrill, Platt and Trudgian, with the option of
+    comparing to Kaczorowski.
     """
     [x0, x1, y0, y1] = coord
     if not (x0 <= root.real <= x1 and y0 <= root.imag <= y1) and not silent:
@@ -103,14 +104,22 @@ def box_q(coord, N, root, silent=True, compare=False):
         string = string[:-1] + '.'
         print(string)
         return None
-    [alpha, a, b] = alpha_a_b(coord, N)
+    [alpha, a, b] = alpha_a_b(coord, N, silent=silent)
+    if not silent:
+        print("alpha = {}.".format(alpha))
+        print("a = {}.".format(a))
+        print("b = {}.".format(b))
     w = root.imag
     aw = 0
     for zero in zeros[:N]:
         aw += exp(-zero*w)/abs(complex(0.5, zero))
+    if not silent:
+        print("a_w = {}.".format(aw))
     bw = 0
     for zero in zeros[N:]:
         bw += exp(-zero*w)/abs(complex(0.5, zero))
+    if not silent:
+        print("b_w = {}.".format(bw))
     q = int(pi*a/(alpha - b - 2*bw))
     i = 0
     if alpha - b - 2*bw <= 0:
@@ -119,8 +128,6 @@ def box_q(coord, N, root, silent=True, compare=False):
         return None
     while not 2*aw*sin(pi/q) + 2*pi*a/q <= alpha - b - 2*bw:
             q += 1
-            if not silent:
-                print('q={} does not work.'.format(q))
             i += 1
             if i == 750:
                 if not silent:
