@@ -24,6 +24,12 @@ def f(z):
         sum += complex(0, zero)*exp(complex(0, zero)*z)/complex(0.5, zero)
     return sum
 
+def F_N(z, N):
+    sum = 0
+    for zero in zeros[:N]:
+        sum += exp(complex(0, zero)*z)/complex(0.5, zero)
+    return sum
+
 def root(point, silent=False):
     root = None
     try:
@@ -43,12 +49,6 @@ def box(coord, N, silent=True):
     b = 0
     for zero in zeros[N:]:
         b += exp(-zero*y0)/abs(complex(0.5, zero))
-
-    def F_N(z, N):
-        sum = 0
-        for zero in zeros[:N]:
-            sum += exp(complex(0, zero)*z)/complex(0.5, zero)
-        return sum
 
     x_bounds = [(x0, x1)]
     y_bounds = [(y0, y1)]
