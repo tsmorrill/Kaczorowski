@@ -30,10 +30,12 @@ def F_N(z, N):
         sum += exp(complex(0, zero)*z)/complex(0.5, zero)
     return sum
 
-def root(point, silent=False):
+def root(guess, silent=False):
+    """Find a root of F near guess using Newton's method.
+    """
     root = None
     try:
-        root = newton(F, point, fprime=f)
+        root = newton(F, guess, fprime=f)
     except:
         if not silent:
             print("Newton's method failed.")
@@ -76,18 +78,17 @@ def alpha_a_b(coord, N, silent=True):
 
     return alpha, a, b
 
-def good_box(coord, N):
-    [x0, x1, y0, y1] = coord
-    [alpha, a, b] = alpha_a_b(coord, N)
-    return (x1 - x0 < 1) and (alpha > 3*b)
-
 def old_box_q(coord, N, root):
+    ```Calculate alpha, a, b according to Kaczorowski.```
     [alpha, a, b] = alpha_a_b(coord, N)
     if alpha - 3*b < 0:
         return None
     return int(4*pi*a/(alpha - 3*b)) + 1
 
 def box_q(coord, N, root, silent=True, compare=False):
+    """Calculate alpha, a, b according to Morrill, Platt and Trudgian, with the
+    option of comparing to Kaczorowski.
+    """
     [x0, x1, y0, y1] = coord
     if not (x0 <= root.real <= x1 and y0 <= root.imag <= y1) and not silent:
         string = 'Error: Box does not contain root:'
@@ -133,6 +134,8 @@ def box_q(coord, N, root, silent=True, compare=False):
     return q
 
 def opti_box(guess, N, root):
+    """Optimize q^(-N) as a function of the coordinates (x0, x1, y0, y1).
+    """
     if not box_q(guess, N, root, silent=False):
         return None
 
