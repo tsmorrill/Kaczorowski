@@ -168,7 +168,7 @@ def opti_box(guess, N, root):
 
     class RandomDisplacementBounds(object):
         """random displacement with bounds"""
-        def __init__(self, x, y, stepsize=0.5:
+        def __init__(self, x, y, stepsize=0.5):
             self.x = x
             self.y = y
             self.stepsize = stepsize
