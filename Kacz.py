@@ -54,9 +54,6 @@ def alpha_a_b(coord, N, silent=True):
     for zero in zeros[N:]:
         b += exp(-zero*y0)/abs(complex(0.5, zero))
 
-    x_bounds = [(x0, x1)]
-    y_bounds = [(y0, y1)]
-
     def F_north(x):
         return abs(F_N(complex(x, y1), N))
     def F_south(x):
