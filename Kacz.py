@@ -66,10 +66,16 @@ def alpha_a_b(coord, N, silent=True):
     def F_west(y):
         return abs(F_N(complex(x0, y), N))
 
-    min_north = minimize(F_north, 0.5*(x0 + x1), bounds=x_bounds).fun
-    min_south = minimize(F_south, 0.5*(x0 + x1), bounds=x_bounds).fun
-    min_east = minimize(F_east, 0.5*(y0 + y1), bounds=y_bounds).fun
-    min_west = minimize(F_west, 0.5*(y0 + y1), bounds=y_bounds).fun
+    def x_bounds(x_new):
+        return x0 <= x_new <= x1
+
+    def y_bounds(x_new):
+        return x0 <= x_new <= x1
+
+    min_north = basinhopping(F_north, 0.5*(x0 + x1), accept_test=x_bounds).fun
+    min_north = basinhopping(F_south, 0.5*(x0 + x1), accept_test=x_bounds).fun
+    min_east = basinhopping(F_east, 0.5*(y0 + y1), accept_test=x_bounds).fun
+    min_west = basinhopping(F_west, 0.5*(y0 + y1), accept_test=x_bounds).fun
 
     if not silent:
         tuple = (min_north, min_south, min_east, min_west)
@@ -162,7 +168,7 @@ def opti_box(guess, N, root):
 
     class RandomDisplacementBounds(object):
         """random displacement with bounds"""
-        def __init__(self, x, y, stepsize=0.5):
+        def __init__(self, x, y, stepsize=0.5:
             self.x = x
             self.y = y
             self.stepsize = stepsize
