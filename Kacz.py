@@ -66,10 +66,16 @@ def alpha_a_b(coord, N, silent=True):
     def F_west(y):
         return abs(F_N(complex(x0, y), N))
 
-    min_north = minimize(F_north, 0.5*(x0 + x1), bounds=x_bounds).fun
-    min_south = minimize(F_south, 0.5*(x0 + x1), bounds=x_bounds).fun
-    min_east = minimize(F_east, 0.5*(y0 + y1), bounds=y_bounds).fun
-    min_west = minimize(F_west, 0.5*(y0 + y1), bounds=y_bounds).fun
+    def x_bounds(f_new, x_new, f_old, x_old):
+        return x0 <= x_new <= x1
+
+    def y_bounds(f_new, x_new, f_old, x_old):
+        return x0 <= x_new <= x1
+
+    min_north = basinhopping(F_north, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), accept_test=x_bounds).fun
+    min_south = basinhopping(F_south, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), accept_test=x_bounds).fun
+    min_east = basinhopping(F_east, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), accept_test=x_bounds).fun
+    min_west = basinhopping(F_west, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), accept_test=x_bounds).fun
 
     if not silent:
         tuple = (min_north, min_south, min_east, min_west)
