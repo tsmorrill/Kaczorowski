@@ -30,7 +30,7 @@ def F_N(z, N):
         sum += exp(complex(0, zero)*z)/complex(0.5, zero)
     return sum
 
-def root(guess, silent=False):
+def root_near(guess, silent=False):
     """Find a root of F near guess using Newton's method.
     """
     root = None
@@ -70,7 +70,7 @@ def alpha_a_b(coord, N, silent=True):
         return x0 <= x_new <= x1
 
     def y_bounds(f_new, x_new, f_old, x_old):
-        return x0 <= x_new <= x1
+        return y0 <= x_new <= y1
 
     min_north = basinhopping(F_north, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), accept_test=x_bounds).fun
     min_south = basinhopping(F_south, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), accept_test=x_bounds).fun
