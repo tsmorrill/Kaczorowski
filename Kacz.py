@@ -74,8 +74,8 @@ def alpha_a_b(coord, N, silent=True):
 
     min_north = basinhopping(F_north, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), accept_test=x_bounds).fun
     min_south = basinhopping(F_south, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), accept_test=x_bounds).fun
-    min_east = basinhopping(F_east, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), accept_test=x_bounds).fun
-    min_west = basinhopping(F_west, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), accept_test=x_bounds).fun
+    min_east = basinhopping(F_east, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), accept_test=y_bounds).fun
+    min_west = basinhopping(F_west, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), accept_test=y_bounds).fun
 
     if not silent:
         tuple = (min_north, min_south, min_east, min_west)
