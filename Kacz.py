@@ -66,15 +66,15 @@ def alpha_a_b(coord, N, silent=True):
         return abs(F_N(complex(x0, y), N))
 
     def x_bounds(f_new, x_new, f_old, x_old):
-        return x0 <= x_new <= x1
+        return x0 <= x_new[0] <= x1
 
     def y_bounds(f_new, x_new, f_old, x_old):
-        return y0 <= x_new <= y1
+        return y0 <= x_new[0] <= y1
 
-    min_north = basinhopping(F_north, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), accept_test=x_bounds)
-    min_south = basinhopping(F_south, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), accept_test=x_bounds)
-    min_east = basinhopping(F_east, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), accept_test=y_bounds)
-    min_west = basinhopping(F_west, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), accept_test=y_bounds)
+    min_north = basinhopping(F_north, 0.5*(x0 + x1), stepsize=0.1*(x1-x0), accept_test=x_bounds, disp=True)
+    min_south = basinhopping(F_south, 0.5*(x0 + x1), stepsize=0.1*(x1-x0), accept_test=x_bounds)
+    min_east = basinhopping(F_east, 0.5*(y0 + y1), stepsize=0.1*(y1-y0), accept_test=y_bounds, disp=True)
+    min_west = basinhopping(F_west, 0.5*(y0 + y1), stepsize=0.1*(y1-y0), accept_test=y_bounds)
 
     if not silent:
         print('min_north')
