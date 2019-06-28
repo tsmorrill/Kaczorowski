@@ -7,7 +7,6 @@ from scipy.optimize import minimize
 from scipy.optimize import basinhopping
 from importlib import reload
 
-
 file = open('zeros1', 'r')
 zeros = file.read().split('\n')
 zeros = [float(string) for string in zeros[:4000]]
@@ -192,14 +191,14 @@ def opti_box(coord, N, root):
         coord = x
         q = box_q(coord, N, root, silent=True)
         if not q:
-            return 10000
-        print('q <= {}.'.format(q))
-        return q
+            print('Bad coordinates! {}'.format(x))
+            return 0
+        print('q <= {}. {}'.format(q, x))
+        return -q**-N
 
-    result = basinhopping(opti_q, coord, minimizer_kwargs=kwargs, accept_test=unit_wide)
-    if result.fun == 1:
-        print("That ain't good.")
-    return result
+    result = basinhopping(opti_q, coord, stepsize=0.002, niter=10, minimizer_kwargs=kwargs, accept_test=unit_wide, disp=True)
+    print('varkappa >= {}.'.format(result.fun))
+    return result.x
 
 def epsilon_box(x_epsilon, y_epsilon, N, root):
     x, y = root.real, root.imag
