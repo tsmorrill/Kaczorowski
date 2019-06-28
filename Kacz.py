@@ -95,8 +95,7 @@ def good_coord(coord, N, root):
     for zero in zeros[N:]:
         bw += exp(-zero*w)/abs(complex(0.5, zero))
 
-    print(alpha)
-    print(b + a*bw)
+    print(alpha - b - a*bw)
 
     return alpha - b - 2*bw > 0
 
@@ -150,7 +149,7 @@ def box_q(coord, N, root, silent=True, compare=False):
     while not 2*aw*sin(pi/q) + 2*pi*a/q <= alpha - b - 2*bw:
             q += 1
             i += 1
-            if i == 750:
+            if i == 1000:
                 if not silent:
                     print('Error: Timed out.')
                 return None
