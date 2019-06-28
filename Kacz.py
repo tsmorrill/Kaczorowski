@@ -174,42 +174,19 @@ def box_q(coord, N, root, silent=True, compare=False):
         print('As compared to {},'.format(Kacz_q))
     return q
 
-def opti_box(guess, N, root):
+def opti_box(coord, N, root):
     """Optimize q^(-N) as a function of the coordinates (x0, x1, y0, y1).
     """
     if not box_q(guess, N, root, silent=False):
         return None
 
     x, y = root.real, root.imag
-    class MyBounds(object):
-        def __init__(self, xymax=[x, np.inf, y, np.inf], xymin=[0, x, 0, y]):
-            self.xymax = np.array(xymax)
-            self.xymin = np.array(xymin)
-        def __call__(self, **kwargs):
-            x = kwargs["x_new"]
-            coord_max = bool(np.all(x <= self.xymax))
-            coord_min = bool(np.all(x >= self.xymin))
-            unit_wide = bool(x[1] - x[0] < 1)
-            good_alpha = bool(box_q(x, N, root, silent=True))
-            return coord_max and coord_min and unit_wide and good_alpha
-    mybounds = MyBounds()
 
-    class RandomDisplacementBounds(object):
-        """random displacement with bounds"""
-        def __init__(self, x, y, stepsize=0.5):
-            self.x = x
-            self.y = y
-            self.stepsize = stepsize
+    kwargs = {"bounds":[(x-1, x), (x, x+1), (0, y), (y, 1)]}
 
-        def __call__(self, x):
-            """take a random step but ensure the new position is within the bounds"""
-            while True:
-                xnew = x + np.random.uniform(-self.stepsize, self.stepsize,
-                                             np.shape(x))
-                if x[0] < self.x < x[1] and x[2] < self.y < x[3]:
-                    break
-            return xnew
-    take_step = RandomDisplacementBounds(x, y)
+    def unit_wide(f_new, x_new, f_old, x_old):
+        x0, x1 = x_new[0], x_new[1]
+        return x1 - x0 <= 1
 
     def opti_q(x):
         coord = x
@@ -218,8 +195,7 @@ def opti_box(guess, N, root):
             return 10000
         return q
 
-    result = basinhopping(opti_q, guess, niter=1000, accept_test=mybounds,
-                          take_step=take_step)
+    result = basinhopping(opti_q, coord, niter=1000, minimizer_kwargs=kwargs, accept_test=unit_wide)
     if result.fun == 1:
         print("That ain't good.")
     return result
