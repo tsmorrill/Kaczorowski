@@ -5,6 +5,8 @@ import numpy as np
 from scipy.optimize import newton
 from scipy.optimize import minimize
 from scipy.optimize import basinhopping
+from importlib import reload
+
 
 file = open('zeros1', 'r')
 zeros = file.read().split('\n')
@@ -84,6 +86,19 @@ def alpha_a_b(coord, N, silent=True):
     alpha = min(min_north, min_south, min_east, min_west)
 
     return alpha, a, b
+
+def good_coord(coord, N, root):
+    [alpha, a, b] = alpha_a_b(coord, N)
+
+    w = root.imag
+    bw = 0
+    for zero in zeros[N:]:
+        bw += exp(-zero*w)/abs(complex(0.5, zero))
+
+    print(alpha)
+    print(b + a*bw)
+
+    return alpha - b - 2*bw > 0
 
 def old_box_q(coord, N, root):
     """Calculate alpha, a, b according to Kaczorowski."""
