@@ -74,20 +74,20 @@ def alpha_a_b(coord, N, silent=True):
     ns_kwargs = {"bounds":[(x0, x1)]}
     ew_kwargs = {"bounds":[(y0, y1)]}
 
-    min_north = basinhopping(F_north, 0.5*(x0 + x1), stepsize=0.1*(x1-x0), minimizer_kwargs=ns_kwargs)
-    min_south = basinhopping(F_south, 0.5*(x0 + x1), stepsize=0.1*(x1-x0), minimizer_kwargs=ns_kwargs)
-    min_east = basinhopping(F_east, 0.5*(y0 + y1), stepsize=0.1*(y1-y0), minimizer_kwargs=ew_kwargs)
-    min_west = basinhopping(F_west, 0.5*(y0 + y1), stepsize=0.1*(y1-y0), minimizer_kwargs=ew_kwargs)
+    min_north = basinhopping(F_north, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), minimizer_kwargs=ns_kwargs)
+    min_south = basinhopping(F_south, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), minimizer_kwargs=ns_kwargs)
+    min_east = basinhopping(F_east, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), minimizer_kwargs=ew_kwargs)
+    min_west = basinhopping(F_west, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), minimizer_kwargs=ew_kwargs)
 
-    if not silent:
-        print('min_north')
-        print(min_north)
-        print('min_south')
-        print(min_south)
-        print('min_east')
-        print(min_east)
-        print('min_west')
-        print(min_west)
+    # if not silent:
+    #    print('min_north')
+    #    print(min_north)
+    #    print('min_south')
+    #    print(min_south)
+    #    print('min_east')
+    #    print(min_east)
+    #    print('min_west')
+    #    print(min_west)
 
     min_north = min_north.fun
     min_south = min_south.fun
@@ -177,7 +177,7 @@ def box_q(coord, N, root, silent=True, compare=False):
 def opti_box(coord, N, root):
     """Optimize q^(-N) as a function of the coordinates (x0, x1, y0, y1).
     """
-    if not box_q(guess, N, root, silent=False):
+    if not box_q(coord, N, root, silent=False):
         return None
 
     x, y = root.real, root.imag
@@ -190,9 +190,10 @@ def opti_box(coord, N, root):
 
     def opti_q(x):
         coord = x
-        q = box_q(coord, N, root, silent=True)
+        q = box_q(coord, N, root, silent=False)
         if not q:
             return 10000
+        print(q)
         return q
 
     result = basinhopping(opti_q, coord, niter=1000, minimizer_kwargs=kwargs, accept_test=unit_wide)
