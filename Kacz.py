@@ -190,13 +190,13 @@ def opti_box(coord, N, root):
 
     def opti_q(x):
         coord = x
-        q = box_q(coord, N, root, silent=False)
+        q = box_q(coord, N, root, silent=True)
         if not q:
             return 10000
-        print(q)
+        print('q <= {}.'.format(q))
         return q
 
-    result = basinhopping(opti_q, coord, niter=1000, minimizer_kwargs=kwargs, accept_test=unit_wide)
+    result = basinhopping(opti_q, coord, minimizer_kwargs=kwargs, accept_test=unit_wide)
     if result.fun == 1:
         print("That ain't good.")
     return result
