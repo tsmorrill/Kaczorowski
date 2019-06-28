@@ -177,7 +177,7 @@ def box_q(coord, N, root, silent=True, compare=False):
 def opti_box(coord, N, root):
     """Optimize q^(-N) as a function of the coordinates (x0, x1, y0, y1).
     """
-    if not box_q(coord, N, root, silent=False):
+    if not box_q(coord, N, root, silent=True):
         return None
 
     x, y = root.real, root.imag
