@@ -5,10 +5,11 @@ import numpy as np
 from scipy.optimize import newton
 from scipy.optimize import minimize
 from scipy.optimize import basinhopping
+from importlib import reload
 
 file = open('zeros1', 'r')
 zeros = file.read().split('\n')
-zeros = [float(string) for string in zeros[:4000]]
+zeros = [float(string) for string in zeros[:1000]]
 file.close()
 print('Approximating by using first {} zeros of zeta.'.format(len(zeros)))
 
@@ -63,24 +64,53 @@ def alpha_a_b(coord, N, silent=True):
     def F_west(y):
         return abs(F_N(complex(x0, y), N))
 
-    def x_bounds(f_new, x_new, f_old, x_old):
-        return x0 <= x_new <= x1
+    # def x_bounds(f_new, x_new, f_old, x_old):
+    #     return x0 <= x_new[0] <= x1
 
-    def y_bounds(f_new, x_new, f_old, x_old):
-        return y0 <= x_new <= y1
+    # def y_bounds(f_new, x_new, f_old, x_old):
+    #     return y0 <= x_new[0] <= y1
 
-    min_north = basinhopping(F_north, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), accept_test=x_bounds).fun
-    min_south = basinhopping(F_south, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), accept_test=x_bounds).fun
-    min_east = basinhopping(F_east, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), accept_test=y_bounds).fun
-    min_west = basinhopping(F_west, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), accept_test=y_bounds).fun
+    ns_kwargs = {"bounds":[(x0, x1)]}
+    ew_kwargs = {"bounds":[(y0, y1)]}
+
+    min_north = basinhopping(F_north, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), minimizer_kwargs=ns_kwargs)
+    min_south = basinhopping(F_south, 0.5*(x0 + x1), stepsize=0.5*(x1-x0), minimizer_kwargs=ns_kwargs)
+    min_east = basinhopping(F_east, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), minimizer_kwargs=ew_kwargs)
+    min_west = basinhopping(F_west, 0.5*(y0 + y1), stepsize=0.5*(y1-y0), minimizer_kwargs=ew_kwargs)
+
+    # if not silent:
+    #    print('min_north')
+    #    print(min_north)
+    #    print('min_south')
+    #    print(min_south)
+    #    print('min_east')
+    #    print(min_east)
+    #    print('min_west')
+    #    print(min_west)
+
+    min_north = min_north.fun
+    min_south = min_south.fun
+    min_east = min_east.fun
+    min_west = min_west.fun
 
     if not silent:
-        tuple = (min_north, min_south, min_east, min_west)
-        print("alpha = min{}.".format(tuple))
+        print((min_north, min_south, min_east, min_west))
 
     alpha = min(min_north, min_south, min_east, min_west)
 
     return alpha, a, b
+
+def good_coord(coord, N, root):
+    [alpha, a, b] = alpha_a_b(coord, N)
+
+    w = root.imag
+    bw = 0
+    for zero in zeros[N:]:
+        bw += exp(-zero*w)/abs(complex(0.5, zero))
+
+    print(alpha - b - a*bw)
+
+    return alpha - b - 2*bw > 0
 
 def old_box_q(coord, N, root):
     """Calculate alpha, a, b according to Kaczorowski."""
@@ -132,7 +162,7 @@ def box_q(coord, N, root, silent=True, compare=False):
     while not 2*aw*sin(pi/q) + 2*pi*a/q <= alpha - b - 2*bw:
             q += 1
             i += 1
-            if i == 750:
+            if i == 1000:
                 if not silent:
                     print('Error: Timed out.')
                 return None
@@ -143,55 +173,32 @@ def box_q(coord, N, root, silent=True, compare=False):
         print('As compared to {},'.format(Kacz_q))
     return q
 
-def opti_box(guess, N, root):
+def opti_box(coord, N, root):
     """Optimize q^(-N) as a function of the coordinates (x0, x1, y0, y1).
     """
-    if not box_q(guess, N, root, silent=False):
+    if not box_q(coord, N, root, silent=True):
         return None
 
     x, y = root.real, root.imag
-    class MyBounds(object):
-        def __init__(self, xymax=[x, np.inf, y, np.inf], xymin=[0, x, 0, y]):
-            self.xymax = np.array(xymax)
-            self.xymin = np.array(xymin)
-        def __call__(self, **kwargs):
-            x = kwargs["x_new"]
-            coord_max = bool(np.all(x <= self.xymax))
-            coord_min = bool(np.all(x >= self.xymin))
-            unit_wide = bool(x[1] - x[0] < 1)
-            good_alpha = bool(box_q(x, N, root, silent=True))
-            return coord_max and coord_min and unit_wide and good_alpha
-    mybounds = MyBounds()
 
-    class RandomDisplacementBounds(object):
-        """random displacement with bounds"""
-        def __init__(self, x, y, stepsize=0.5):
-            self.x = x
-            self.y = y
-            self.stepsize = stepsize
+    kwargs = {"bounds":[(x-1, x), (x, x+1), (0, y), (y, 1)]}
 
-        def __call__(self, x):
-            """take a random step but ensure the new position is within the bounds"""
-            while True:
-                xnew = x + np.random.uniform(-self.stepsize, self.stepsize,
-                                             np.shape(x))
-                if x[0] < self.x < x[1] and x[2] < self.y < x[3]:
-                    break
-            return xnew
-    take_step = RandomDisplacementBounds(x, y)
+    def unit_wide(f_new, x_new, f_old, x_old):
+        x0, x1 = x_new[0], x_new[1]
+        return x1 - x0 <= 1
 
     def opti_q(x):
         coord = x
         q = box_q(coord, N, root, silent=True)
         if not q:
-            return 10000
-        return q
+            print('Bad coordinates! {}'.format(x))
+            return 0
+        print('q <= {}. {}'.format(q, x))
+        return -q**-N
 
-    result = basinhopping(opti_q, guess, niter=1000, accept_test=mybounds,
-                          take_step=take_step)
-    if result.fun == 1:
-        print("That ain't good.")
-    return result
+    result = basinhopping(opti_q, coord, stepsize=0.002, niter=10, minimizer_kwargs=kwargs, accept_test=unit_wide, disp=True)
+    print('varkappa >= {}.'.format(result.fun))
+    return result.x
 
 def epsilon_box(x_epsilon, y_epsilon, N, root):
     x, y = root.real, root.imag
