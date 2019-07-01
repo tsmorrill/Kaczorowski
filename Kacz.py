@@ -31,7 +31,7 @@ def F_N(z, N):
         sum += exp(complex(0, zero)*z)/complex(0.5, zero)
     return sum
 
-def root(guess, silent=False):
+def root_near(guess, silent=False):
     """Find a root of F near guess using Newton's method.
     """
     root = None
