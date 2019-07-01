@@ -9,7 +9,7 @@ from importlib import reload
 
 file = open('zeros1', 'r')
 zeros = file.read().split('\n')
-zeros = [float(string) for string in zeros[:4000]]
+zeros = [float(string) for string in zeros[:1000]]
 file.close()
 print('Approximating by using first {} zeros of zeta.'.format(len(zeros)))
 
