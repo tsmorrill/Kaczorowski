@@ -227,3 +227,17 @@ def min_N(coord, N, root, silent=False):
                 X = q**(-n)
                 best_N = n
     return best_N
+
+def min_old_N(coord, N, root, silent=False):
+    """Find a better for a (coord, N, root) that works."""
+    X = old_box_q(coord, N, root)**(-N)
+    best_N = N
+    for n in range(N+11)[:0:-1]:
+        q = old_box_q(coord, n, root)
+        if q:
+            if not silent:
+                print(q**(-n))
+            if q**(-n) > X:
+                X = q**(-n)
+                best_N = n
+    return best_N
