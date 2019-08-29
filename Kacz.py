@@ -7,9 +7,12 @@ from scipy.optimize import minimize
 from scipy.optimize import basinhopping
 from importlib import reload
 
+length = 1000
+
 file = open('zeros1', 'r')
 zeros = file.read().split('\n')
-zeros = [float(string) for string in zeros[:1000]]
+zeros = [float(string) for string in zeros[:length]]
+tail =  [float(string) for string in zeros[length:2*length]]
 file.close()
 print('Approximating by using first {} zeros of zeta.'.format(len(zeros)))
 
@@ -28,6 +31,12 @@ def f(z):
 def F_N(z, N):
     sum = 0
     for zero in zeros[:N]:
+        sum += exp(complex(0, zero)*z)/complex(0.5, zero)
+    return sum
+
+def G_N(z, N):
+    sum = 0
+    for zero in tail[:N]:
         sum += exp(complex(0, zero)*z)/complex(0.5, zero)
     return sum
 
