@@ -1,8 +1,11 @@
 from numpy import absolute as abs
 from numpy import exp as exp
 from numpy import floor as fl
+from numpy import log as log
 from numpy import pi as pi
 from numpy import sin as sin
+
+from scipy.special import expn as Ei
 
 length = 1000
 
@@ -34,6 +37,11 @@ def a_sum(xi, epsilon):
         gamma = zeros[i-1]
         rho = 1/2 + gamma*1j
         sum += exp(-gamma*exp(u - epsilon)*sin_min)/abs(rho)
+    return sum
 
 def tail(xi, epsilon):
     """Calculate upper bound for sum_{length+1} a_i(z) on circle of radius epsilon about xi."""
+    u, v = xi.real, xi.imag
+    y = v - epsilon
+    gamma = tail[0]
+    return (1/y + 4*log(gamma*(1-1/2/pi)))*exp(-y*gamma) + 2*Ei(1, -y*gamma)/log(gamma/2/pi)
