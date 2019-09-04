@@ -5,7 +5,7 @@ from numpy import log as log
 from numpy import pi as pi
 from numpy import sin as sin
 
-from scipy.special import expn as Ei # wrong definition in scipy
+from scipy.special import expn as E1 # -Ei(-x) = E1(x)
 
 length = 1000
 
@@ -44,4 +44,5 @@ def tail_sum(xi, epsilon):
     u, v = xi.real, xi.imag
     y = v - epsilon
     gamma = tail[0]
-    return (1/y + 4*log(gamma*(1-1/2/pi)))*exp(-y*gamma) + 2*Ei(1, -y*gamma)/log(gamma/2/pi)
+    Ei = -E1(1, -y*gamma)
+    return (1/y + 4*log(gamma*(1-1/2/pi)))*exp(-y*gamma) + 2*Ei/log(gamma/2/pi)
