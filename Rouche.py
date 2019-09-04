@@ -16,14 +16,14 @@ zeros = [float(string) for string in zeros[:length]]
 file.close()
 print('Approximating by using first {} zeros of zeta.'.format(len(zeros)))
 
-def a1(xi, epsilon):
+def init_sum(xi, epsilon):
     """Calculate lower bound for a_1(z) on circle of radius epsilon about xi."""
     u, v = xi.real, xi.imag
     gamma = 14.134725142
     rho = 1/2 + gamma
-    return exp(-gamma*exp(u + epsilon))/abs(rho)
+    return exp(-gamma*(v + epsilon))/abs(rho)
 
-def a_sum(xi, epsilon):
+def middle_sum(xi, epsilon):
     """Calculate upper bound for sum_1^length a_i(z) on circle of radius epsilon about xi."""
     u, v = xi.real, xi.imag
     k = fl(u/pi)
