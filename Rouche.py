@@ -44,5 +44,5 @@ def tail_sum(xi, epsilon):
     u, v = xi.real, xi.imag
     y = v - epsilon
     gamma = tail[0]
-    Ei = -E1(1, -y*gamma)
+    Ei = -E1(1, y*gamma)
     return (1/y + 4*log(gamma*(1-1/2/pi)))*exp(-y*gamma) + 2*Ei/log(gamma/2/pi)
