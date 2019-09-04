@@ -5,14 +5,14 @@ from numpy import log as log
 from numpy import pi as pi
 from numpy import sin as sin
 
-from scipy.special import expn as Ei
+from scipy.special import expn as Ei # wrong definition in scipy
 
 length = 1000
 
 file = open('zeros1', 'r')
 zeros = file.read().split('\n')
+tail = [float(string) for string in zeros[length:2*length]]
 zeros = [float(string) for string in zeros[:length]]
-tail =  [float(string) for string in zeros[length:2*length]]
 file.close()
 print('Approximating by using first {} zeros of zeta.'.format(len(zeros)))
 
@@ -39,7 +39,7 @@ def a_sum(xi, epsilon):
         sum += exp(-gamma*exp(u - epsilon)*sin_min)/abs(rho)
     return sum
 
-def tail(xi, epsilon):
+def tail_sum(xi, epsilon):
     """Calculate upper bound for sum_{length+1} a_i(z) on circle of radius epsilon about xi."""
     u, v = xi.real, xi.imag
     y = v - epsilon
