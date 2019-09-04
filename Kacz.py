@@ -129,7 +129,7 @@ def old_box_q(coord, N, root):
     return int(4*pi*a/(alpha - 3*b)) + 1
 
 def box_q(coord, N, root, silent=True, compare=False):
-    """Calculate q according to Morrill, Platt and Trudgian, with the option of
+    """Calculate q according to Morrill, Platt, and Trudgian, with the option of
     comparing to Kaczorowski.
     """
     [x0, x1, y0, y1] = coord
