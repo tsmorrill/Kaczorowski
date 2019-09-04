@@ -41,4 +41,4 @@ def tail_sum(xi, epsilon):
     return (1/y + 4*log(gamma*(1-1/2/pi)))*exp(-y*gamma) + 2*Ei/log(gamma/2/pi)
 
 def triple_play(xi, epsilon):
-    return(init_sum(xi, epsilon), middle_sum(xi, epsilon) + tail_sum(xi, epsilon))
+    return(init_sum(xi, epsilon) - middle_sum(xi, epsilon), tail_sum(xi, epsilon))
